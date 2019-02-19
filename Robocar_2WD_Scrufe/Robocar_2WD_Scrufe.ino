@@ -1,7 +1,9 @@
 #include <L298N.h>
 #include "Timer.h"
 #include <Servo.h>
+
 Timer t;
+Servo myservo; 
 
 //pin definition
 #define EN1 3
@@ -14,7 +16,7 @@ Timer t;
 
 #define trigPin A0
 #define echoPin A1
-#define servopin 9
+#define servoPin 9
 
 //create a motor instance
 L298N motor1(EN1, IN2, IN1);
@@ -28,14 +30,13 @@ int randomdir;
 int randomturning;
 int motor_speed = 220;
 
-void setup() {
-
-  //Serial.begin(9600);
+void setup() 
+{
+  myservo.attach(servoPin); 
   motor1.setSpeed(motor_speed); 
   motor2.setSpeed(motor_speed);
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
-  myservo.attach(servopin);
   distance_fine =t.every(50, readDistance);
 }
 
@@ -43,7 +44,8 @@ void loop()
 {
     t.update();
     //Serial.println(distance_fine);
-
+    forward(motor_speed);
+/*
     if(distance_fine < 30)
     {
       turn_head_left();
@@ -72,7 +74,8 @@ void loop()
       turn_head_right();
       forward(motor_speed);
     }
-    
+
+*/    
 } // end of loop
 
 
@@ -80,22 +83,21 @@ void loop()
 void turn_head_left()
 {
 
-  for (int pos = 0; pos <= 180; pos += 1) 
-  { // goes from 0 degrees to 180 degrees
-    // in steps of 1 degree
-    myservo.write(pos); 
-    delay(15);          
-  }
+    for (pos = 0; pos <= 180; pos += 1) 
+    { 
+        myservo.write(pos);             
+        delay(15);                      
+    }
 }
 
 void turn_head_right()
 {
 
-  for (int pos = 180; pos >= 0; pos -= 1) 
-  { // goes from 180 degrees to 0 degrees
-    myservo.write(pos); 
-    delay(15);          
-  }
+  for (pos = 180; pos >= 0; pos -= 1) 
+    { 
+        myservo.write(pos);             
+        delay(15);                      
+    }
 }
 
 int readDistance() 
@@ -149,5 +151,3 @@ void stop_engine(){
   motor1.stop();
   motor2.stop();
 }
-
-

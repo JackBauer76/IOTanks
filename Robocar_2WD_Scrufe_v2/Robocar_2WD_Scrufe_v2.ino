@@ -1,10 +1,13 @@
+/*
+In this sketch I will try to call the distance 
+function each time i need it (w/o timer)
+
+
+*/
+
 #include <L298N.h>
 #include "Timer.h"
 #include <Servo.h>
-
-
-Timer t;
-Servo myservo; 
 
 //pin definition
 #define EN1 3
@@ -22,15 +25,15 @@ Servo myservo;
 //create a motor instance
 L298N motor1(EN1, IN2, IN1);
 L298N motor2(EN2, IN4, IN3);
-
+Timer t;
+Servo myservo; 
 
 volatile long duration, distance_fine;
-int randNumber;
-int randNumber2;
-int randomdir;
-int randomturning;
-int motor_speed = 255;
+int motor_speed = 180;
 
+enum states { drive, stopvehicle, check_left, check_right};
+
+////////////////////////Setup////////////////////
 void setup() 
 {
   Serial.begin(9600);
@@ -41,49 +44,79 @@ void setup()
   pinMode(echoPin, INPUT);
   distance_fine =t.every(50, readDistance);
   myservo.write(90);  
-}
+} // End of Setup
 
+///////////////////////Loop///////////////////
 void loop()
 {
-    t.update();
-   
+    distance_fine = readDistance();  
     Serial.println(distance_fine);
-    myservo.write(90);    
+    myservo.write(90);
     
-    if(distance_fine < 30)
-    {
-          
-          if(distance_fine < 15)
-          {
-             turn_head_left();
-             backward(motor_speed);
-             turn_head_right();
-             
-          }
-          else
-          {
-             turn_head_right();
-             turnleft(motor_speed);
-             turn_head_left();
-          }
-    }
-    else
-    {
-      forward(motor_speed);
-    }
 
+if(distance_fine > 40)
+  {
+      forward(motor_speed);
+  }
+else
+  {
+      if (distance_fine < 5) 
+      {
+        backward(motor_speed);
+        decide_direction();
+      }
+      else
+      {
+        decide_direction();
+      }
+      
+  } 
+
+    
 
 } // end of loop
 
+/////////////////// Functions ////////////////
 
+void decide_direction()
+{
+          stop_engine();
+          turn_head_left();
+          int distance_left = readDistance(); 
+          myservo.write(90);
+          turn_head_right();  
+          int distance_right = readDistance(); 
+          myservo.write(90);
+          if(distance_left > distance_right)
+          {
+              turnleft(motor_speed);
+              Serial.print("distance_left: ");
+              Serial.println(distance_left);
+              Serial.print("distance_right: ");
+              Serial.println(distance_right);
+              Serial.println("turnleft_decided");
+              
+          }    
+          else // distance_right >= distance_left
+          {
+              turnright(motor_speed);
+              Serial.print("distance_left: ");
+              Serial.println(distance_left);
+              Serial.print("distance_right: ");
+              Serial.println(distance_right);
+              Serial.println("turnright_decided");
+              
+          }
+}
 
 void turn_head_left()
 {
   
     for (int pos = 90; pos <= 120; pos += 1) 
     { 
-        myservo.write(pos);             
-        delay(50);                     
+        myservo.write(pos);
+        distance_fine = readDistance();               
+        delay(20);                     
     }
 }
 
@@ -93,7 +126,8 @@ void turn_head_right()
   for (int pos = 120; pos >= 60; pos -= 1) 
     { 
         myservo.write(pos);             
-        delay(50);                     
+        distance_fine = readDistance();               
+        delay(20);  
     }
 }
 
@@ -114,37 +148,46 @@ int readDistance()
 }
 
 void forward(int DC_Speed){
+  Serial.println("forward");
   motor1.setSpeed(DC_Speed); // an integer between 0 and 255
   motor2.setSpeed(DC_Speed); // an integer between 0 and 255
   motor1.forward();
   motor2.forward();
+  //delay(400);  
   }
 
 
-
 void backward(int DC_Speed){
+  Serial.println("backward");
   motor1.setSpeed(DC_Speed); // an integer between 0 and 255
   motor2.setSpeed(DC_Speed); // an integer between 0 and 255
+  delay(400);  
   motor1.backward();
   motor2.backward();
 }
 
 
 void turnleft(int DC_Speed){
+  Serial.println("turnleft");
   motor1.setSpeed(DC_Speed); // an integer between 0 and 255
   motor2.setSpeed(DC_Speed); // an integer between 0 and 255
+  delay(600);
   motor1.forward();
   motor2.backward();
 }
 
 void turnright(int DC_Speed){
+  Serial.println("turnright");
   motor1.setSpeed(DC_Speed); // an integer between 0 and 255
   motor2.setSpeed(DC_Speed); // an integer between 0 and 255
+  delay(600);
   motor1.backward();
   motor2.forward();
 }
 
 void stop_engine(){
+  Serial.println("stop_engine");
   motor1.stop();
   motor2.stop();
+  //delay(200);
 }

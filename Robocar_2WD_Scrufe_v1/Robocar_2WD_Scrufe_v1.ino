@@ -33,6 +33,7 @@ int motor_speed = 255;
 
 void setup() 
 {
+  Serial.begin(9600);
   myservo.attach(servoPin); 
   motor1.setSpeed(motor_speed); 
   motor2.setSpeed(motor_speed);
@@ -45,41 +46,29 @@ void setup()
 void loop()
 {
     t.update();
-    //Serial.println(distance_fine);
-    forward(motor_speed);
-    turn_head_left();
-    turn_head_right();
-/*
-    if(distance_fine < 30)
+   
+    Serial.println(distance_fine);
+    myservo.write(90);    
+    
+    if(distance_fine < 40)
     {
-      turn_head_left();
-      if(distance_fine < 10)
-      {
-          turnright(motor_speed);
-      }
-      else
-      {
-        turn_head_right();
-        if(distance_fine < 10)
+        turn_head_left();
+        if(distance_fine < 40)
         {
-            turnleft(motor_speed);
+          turnleft(motor_speed);
         }
         else
         {
-          backward(motor_speed);
-          delay(500);
           turnright(motor_speed);
         }
-      
-      }
+        turn_head_right();
     }
     else
     {
-      turn_head_right();
       forward(motor_speed);
     }
 
-*/    
+
 } // end of loop
 
 
@@ -90,7 +79,7 @@ void turn_head_left()
     for (int pos = 90; pos <= 120; pos += 1) 
     { 
         myservo.write(pos);             
-        delay(25);                      
+        delay(20);                     
     }
 }
 
@@ -100,7 +89,7 @@ void turn_head_right()
   for (int pos = 120; pos >= 60; pos -= 1) 
     { 
         myservo.write(pos);             
-        delay(25);                      
+        delay(20);                     
     }
 }
 

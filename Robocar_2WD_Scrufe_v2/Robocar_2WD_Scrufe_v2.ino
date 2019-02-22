@@ -30,13 +30,15 @@ Servo myservo;
 
 volatile long duration, distance_fine;
 int motor_speed = 180;
+int motor_speedlow = 140;
 
+volatile int loop_counter;
 enum states { drive, stopvehicle, check_left, check_right};
 
 ////////////////////////Setup////////////////////
 void setup() 
 {
-  Serial.begin(9600);
+  ////Serial.begin(9600);
   myservo.attach(servoPin); 
   motor1.setSpeed(motor_speed); 
   motor2.setSpeed(motor_speed);
@@ -44,31 +46,50 @@ void setup()
   pinMode(echoPin, INPUT);
   distance_fine =t.every(50, readDistance);
   myservo.write(90);  
+  loop_counter = 0;
 } // End of Setup
 
 ///////////////////////Loop///////////////////
 void loop()
 {
     distance_fine = readDistance();  
-    Serial.println(distance_fine);
+    //Serial.println(distance_fine);
     myservo.write(90);
     
 
 if(distance_fine > 40)
   {
       forward(motor_speed);
+      loop_counter = 0;
   }
 else
   {
-      if (distance_fine < 5) 
+      if (loop_counter<2)
       {
-        backward(motor_speed);
-        decide_direction();
+
+        if (distance_fine < 5)
+        {
+          backward(motor_speed);
+          decide_direction();
+          loop_counter++;
+        }
+        else
+        {
+          decide_direction();
+          loop_counter++;
+        }
       }
       else
       {
-        decide_direction();
+          motor1.setSpeed(motor_speedlow); 
+          motor2.setSpeed(motor_speedlow); 
+          motor1.backward();
+          motor2.forward();
+          delay(450);
       }
+      
+      
+      
       
   } 
 
@@ -90,21 +111,21 @@ void decide_direction()
           if(distance_left > distance_right)
           {
               turnleft(motor_speed);
-              Serial.print("distance_left: ");
-              Serial.println(distance_left);
-              Serial.print("distance_right: ");
-              Serial.println(distance_right);
-              Serial.println("turnleft_decided");
+              //Serial.print("distance_left: ");
+              //Serial.println(distance_left);
+              //Serial.print("distance_right: ");
+              //Serial.println(distance_right);
+              //Serial.println("turnleft_decided");
               
           }    
           else // distance_right >= distance_left
           {
               turnright(motor_speed);
-              Serial.print("distance_left: ");
-              Serial.println(distance_left);
-              Serial.print("distance_right: ");
-              Serial.println(distance_right);
-              Serial.println("turnright_decided");
+              //Serial.print("distance_left: ");
+              //Serial.println(distance_left);
+              //Serial.print("distance_right: ");
+              //Serial.println(distance_right);
+              //Serial.println("turnright_decided");
               
           }
 }
@@ -112,22 +133,29 @@ void decide_direction()
 void turn_head_left()
 {
   
-    for (int pos = 90; pos <= 120; pos += 1) 
+    for (int pos = 90; pos <= 120; pos = pos +2) 
     { 
         myservo.write(pos);
-        distance_fine = readDistance();               
-        delay(20);                     
+        if (pos >110)
+        {
+          distance_fine = readDistance();               
+        }
+        delay(5);                     
     }
 }
 
 void turn_head_right()
 {
 
-  for (int pos = 120; pos >= 60; pos -= 1) 
+  for (int pos = 120; pos >= 60; pos = pos -2) 
     { 
-        myservo.write(pos);             
+        myservo.write(pos);      
+        if (pos <70)
+        {
+          distance_fine = readDistance();               
+        }       
         distance_fine = readDistance();               
-        delay(20);  
+        delay(5);  
     }
 }
 
@@ -148,7 +176,7 @@ int readDistance()
 }
 
 void forward(int DC_Speed){
-  Serial.println("forward");
+  //Serial.println("forward");
   motor1.setSpeed(DC_Speed); // an integer between 0 and 255
   motor2.setSpeed(DC_Speed); // an integer between 0 and 255
   motor1.forward();
@@ -158,7 +186,7 @@ void forward(int DC_Speed){
 
 
 void backward(int DC_Speed){
-  Serial.println("backward");
+  //Serial.println("backward");
   motor1.setSpeed(DC_Speed); // an integer between 0 and 255
   motor2.setSpeed(DC_Speed); // an integer between 0 and 255
   delay(400);  
@@ -168,7 +196,7 @@ void backward(int DC_Speed){
 
 
 void turnleft(int DC_Speed){
-  Serial.println("turnleft");
+  //Serial.println("turnleft");
   motor1.setSpeed(DC_Speed); // an integer between 0 and 255
   motor2.setSpeed(DC_Speed); // an integer between 0 and 255
   delay(600);
@@ -177,7 +205,7 @@ void turnleft(int DC_Speed){
 }
 
 void turnright(int DC_Speed){
-  Serial.println("turnright");
+  //Serial.println("turnright");
   motor1.setSpeed(DC_Speed); // an integer between 0 and 255
   motor2.setSpeed(DC_Speed); // an integer between 0 and 255
   delay(600);
@@ -186,7 +214,7 @@ void turnright(int DC_Speed){
 }
 
 void stop_engine(){
-  Serial.println("stop_engine");
+  //Serial.println("stop_engine");
   motor1.stop();
   motor2.stop();
   //delay(200);

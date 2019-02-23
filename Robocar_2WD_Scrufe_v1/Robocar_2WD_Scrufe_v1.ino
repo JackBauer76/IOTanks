@@ -58,26 +58,20 @@ void loop()
     //Serial.println(distance_fine);
     myservo.write(90);
     
-
-if(distance_fine > 40)
+  if(distance_fine > 40)
   {
       forward(motor_speed);
       loop_counter = 0;
   }
-else
+  else
   {
       if (loop_counter<2)
       {
-
         if (distance_fine < 5)
         {
-          backward(motor_speed);
-          motor1.setSpeed(motor_speedlow); 
-          motor2.setSpeed(motor_speedlow); 
-          motor2.backward();
-          motor1.forward();
-          delay(300);
+          backturn(motor_speedlow);
           loop_counter++;
+          return;
         }
         else
         {
@@ -93,14 +87,7 @@ else
           motor2.forward();
           delay(300);
       }
-      
-      
-      
-      
   } 
-
-    
-
 } // end of loop
 
 /////////////////// Functions ////////////////
@@ -177,6 +164,17 @@ void backward(int DC_Speed){
   motor1.backward();
   motor2.backward();
 }
+
+void backturn(int DC_Speed)
+{
+          backward(DC_Speed);
+          motor1.setSpeed(DC_Speed); 
+          motor2.setSpeed(DC_Speed); 
+          motor2.backward();
+          motor1.forward();
+          delay(300);
+}
+
 
 
 void turnleft(int DC_Speed){

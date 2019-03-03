@@ -25,17 +25,23 @@ void loop()
         
 
         digitalWrite(13, true); // Flash a light to show received good message
-        // Message with a good checksum received, dump it.
-        
         Serial.print("Got: ");
+        int Xvalue = buf[0];
+        int Yvalue = buf[1];
+        Serial.print(" Xvalue is : ");
+        Serial.print(Xvalue);
+        Serial.print("   Yvalue is : ");
+        Serial.println(Yvalue);
         
-        //Serial.println(buf);
         
+
+        /*
         for (int i = 0; i < buflen; i++)
         {
             Serial.print(buf[i], DEC);
             Serial.print(" ");
         }
+        */
 
         Serial.println("");
         digitalWrite(13, false);

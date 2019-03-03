@@ -1,4 +1,5 @@
 #include <TM1637Display.h>
+#include <RCSwitch.h>
 
 const int led_white = 9;
 const int clk_pin = 5;
@@ -6,13 +7,11 @@ const int dio_pin = 6;
 const int poti = A4;
 const int pushbutton = 2;
 
-int potiValue = 0;
-int ledState = LOW;    
-unsigned long previousMillis = 0;     
-const long interval = 1000;   
-volatile float timestamp = 0;
+volatile float last_timestamp = 0;
+volatile int TimeTarget = 0;
 
 TM1637Display display(clk_pin, dio_pin);
+RCSwitch mySwitch = RCSwitch();
 
 void setup()
 {
@@ -20,40 +19,34 @@ void setup()
     pinMode(poti, INPUT);
     display.setBrightness(15);
     Serial.begin(9600);
+    mySwitch.enableTransmit(7);
+    mySwitch.setProtocol(1);
+    mySwitch.setPulseLength(190);
+    mySwitch.setRepeatTransmit(6);
     attachInterrupt(digitalPinToInterrupt(pushbutton), check_timestamp, RISING);
 }
 
-
 void loop()
 {
-
-    potiValue = analogRead(poti);
-    int minutes = map(potiValue,0,1023, 10, 600);
-    unsigned long currentMillis = millis();
-     if (currentMillis - previousMillis >= interval) 
-     {
-        previousMillis = currentMillis;
-        if (ledState == LOW) 
-        {
-            ledState = HIGH;
-        }   
-        else 
-        {
-            ledState = LOW;
-        }
-        digitalWrite(led_white, ledState);
-     
-     }
-
     
-    //display.showNumberDec(minutes, false); // Expect: ___0
-    float op_time_m = timestamp/60000;
-    Serial.println(int(op_time_m));
-    display.showNumberDec(op_time_m, false); // Expect: ___0
+    long counter_time = millis()/60000 - last_timestamp;
+    int time2off = TimeTarget - counter_time;
+    
+
+    display.showNumberDec(time2off, false); 
+    if (time2off == 0 )
+    {
+        mySwitch.send(87500, 24);
+    }
+    (time2off > 0) ? digitalWrite(led_white, HIGH): digitalWrite(led_white, LOW);
+
 
 }
 
 void check_timestamp()
 {
-    timestamp = millis();
+    last_timestamp = millis()/60000;
+    TimeTarget = map(analogRead(poti),0,1023, 10, 600);
+    mySwitch.send(87491, 24); // to be taken out later
+
 }

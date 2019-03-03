@@ -33,10 +33,14 @@ void setup()
 
 void loop()
 {
-    const char *msg = "tenia yo una vez tres perritos";
+    VRx = analogRead(poti_x);
+    VRy = analogRead(poti_y);
+    Istr[0] = map(VRx,0,1023,0,125);
+    Istr[1] = map(VRy,0,1023,0,125);
+    //const char *msg = "tenia yo una vez tres perritos";
     digitalWrite(13, true); // Flash a light to show transmitting
     
-    vw_send((uint8_t *)msg, strlen(msg));
+    vw_send((uint8_t *)Istr, strlen(Istr));
     vw_wait_tx(); // Wait until the whole message is gone
     digitalWrite(13, false);
     delay(200);

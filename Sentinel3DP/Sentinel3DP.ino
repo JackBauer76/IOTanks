@@ -28,19 +28,16 @@ void setup()
 
 void loop()
 {
-    
     long counter_time = millis()/60000 - last_timestamp;
     int time2off = TimeTarget - counter_time;
-    
-
     display.showNumberDec(time2off, false); 
+    
     if (time2off == 0 )
     {
         mySwitch.send(87500, 24);
     }
+    
     (time2off > 0) ? digitalWrite(led_white, HIGH): digitalWrite(led_white, LOW);
-
-
 }
 
 void check_timestamp()
@@ -48,5 +45,4 @@ void check_timestamp()
     last_timestamp = millis()/60000;
     TimeTarget = map(analogRead(poti),0,1023, 10, 600);
     mySwitch.send(87491, 24); // to be taken out later
-
 }

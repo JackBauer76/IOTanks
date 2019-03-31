@@ -1,25 +1,5 @@
 /* V3 based on v2 but with other loop control  
  * new ideas: adapting the lighting pattern functios and instead of using delay, use timer library
- */
-
-#include <Adafruit_NeoPixel.h>
-#include <avr/interrupt.h> 
-#ifdef __AVR__
-#include <avr/power.h>
-#endif
-//#define PIN            3 // Tiny
-#define PIN             6 // Nano
-#define NUMPIXELS      6
-#define COLORSTEP       10
-#define Pushbutton      3
-//#define Pushbutton      0
-//#define PCINT_PIN 0
-#define PCINT_MODE CHANGE
-#define PCINT_FUNCTION blinkLed
-#define Poti1 A3
-#include "Timer.h"
-#include "PinChangeInterrupt.h"
-
 // ATMEL ATTINY 25/45/85 / ARDUINO
 //
 //                  +-\/-+
@@ -28,47 +8,61 @@
 //      Ain2 (D 4) PB4  3|    |6  PB1 (D 1) pwm1     Rotor
 //                 GND  4|    |5  PB0 (D 0) pwm0     Pushbutton
 //    
+*/
 
+#include <Adafruit_NeoPixel.h>
+#include <avr/interrupt.h> 
+#ifdef __AVR__
+#include <avr/power.h>
+#endif
+#define PIN             6 //  Tiny 3
+#define NUMPIXELS      6
+#define COLORSTEP       10
+#define Pushbutton      3 //  Tiny 0
+#define PCINT_MODE CHANGE
+#define PCINT_FUNCTION blinkLed
+#define Poti1 A3
+#define Poti2 A7
+#include "Timer.h"
+#include "PinChangeInterrupt.h"
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 Timer t;
 
 volatile int AuthState = 0;
 int ValuePoti;
+int ValuePoti2;
 
 void setup() 
 {
   pixels.begin(); // This initializes the NeoPixel library.
   pinMode(Pushbutton, INPUT_PULLUP);
   pinMode(Poti1, INPUT);
-  //pinMode(PCINT_PIN, INPUT_PULLUP);
-   // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
+  pinMode(Poti2, INPUT);
   #if defined (__AVR_ATtiny85__)
     if (F_CPU == 8000000) clock_prescale_set(clock_div_1);
   #endif
   //Serial.begin(9600);
   //attachInterrupt(Pushbutton, Auth, RISING);
-  //attachPinChangeInterrupt();
-  attachPCINT(digitalPinToPCINT(Pushbutton), Auth, CHANGE);
+  attachPCINT(digitalPinToPCINT(Pushbutton), Auth, RISING);
 }
 
 void loop() 
 {
   //Serial.print(AuthState);
-  //ValuePoti = analogRead(Poti1);
   ValuePoti = map(analogRead(Poti1),0,1023,0,255 );
-  
+  ValuePoti2 = map(analogRead(Poti2),0,1023,0,255 );
   switch(AuthState)
   {
     case 0:
-        colorWipe(pixels.Color(255, 0, ValuePoti), 1); 
+        colorWipe(pixels.Color(ValuePoti2, 0, ValuePoti), 1); 
         break;
     case 1:
-        colorWipe(pixels.Color(255, 0, 0), 1); 
+        colorWipe(pixels.Color(ValuePoti2, 255, ValuePoti), 1); 
     
         break;
     case 2:
-        colorWipe(pixels.Color(20, 200, 200), 1); 
+        colorWipe(pixels.Color(255,ValuePoti2, ValuePoti), 1); 
     
         break;
     case 3:
@@ -76,7 +70,7 @@ void loop()
     
         break;
     case 4:
-        colorWipe(pixels.Color(100, 200, 25), 1); 
+        colorWipe(pixels.Color(0, 0, 0), 1); 
     
         break;
     

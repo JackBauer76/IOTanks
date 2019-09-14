@@ -8,30 +8,39 @@
     //      
 
 
-const int Pushbutton = 2;
+const int Pushbutton = 9;
 const int Relay = 7;
 const int Pir = 3;
+const int SensorDig = 2;
+const int SensorAnalog = A0;
+const int LedPin = 5;
 
 void setup()
 {
+    Serial.begin(9600);
     pinMode(Pushbutton, INPUT_PULLUP);
     pinMode(Relay, OUTPUT);
     pinMode(Pir, INPUT);
+    pinMode(SensorDig,INPUT);
+    pinMode(SensorAnalog,INPUT);
+    pinMode(LedPin, OUTPUT);    
 }
 
 void loop()
 {
-    
-    if (digitalRead(Pir))
+    Serial.println(analogRead(SensorAnalog));
+
+    if (digitalRead(Pir)||digitalRead(SensorDig))
     {
         digitalWrite(Relay, HIGH);
+        digitalWrite(LedPin, HIGH);
+
+        
     }
     else
     {
         digitalWrite(Relay, LOW);
+        digitalWrite(LedPin, LOW);
     }
     
-    //delay(1500);
-    
-    //delay(1200);
 }

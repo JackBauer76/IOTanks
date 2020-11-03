@@ -1,0 +1,7 @@
+{
+    "sketch": "Blink.ino",
+    "port": "/dev/ttyUSB1",
+    "board": "arduino:avr:nano",
+    "configuration": "cpu=atmega328old",
+    "programmer": "AVRISP mkII"
+}

@@ -1,0 +1,7 @@
+{
+    "port": "/dev/ttyUSB1",
+    "board": "arduino:avr:nano",
+    "programmer": "AVRISP mkII",
+    "sketch": "Huzzah2/Huzzah2.ino",
+    "configuration": "cpu=atmega328old"
+}

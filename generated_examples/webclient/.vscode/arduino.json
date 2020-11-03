@@ -1,0 +1,6 @@
+{
+    "sketch": "webclient.ino",
+    "port": "/dev/ttyUSB2",
+    "board": "arduino:avr:nano",
+    "configuration": "cpu=atmega328old"
+}

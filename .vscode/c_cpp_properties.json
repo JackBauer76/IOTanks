@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "/home/elias/.arduino15/packages/esp8266/tools/**",
+                "/home/elias/.arduino15/packages/esp8266/hardware/esp8266/2.5.0/**",
+                "/home/elias/Documents/Arduino/arduino-1.8.7-linux64/arduino-1.8.7/tools/**",
+                "/home/elias/Documents/Arduino/arduino-1.8.7-linux64/arduino-1.8.7/hardware/arduino/avr/**"
+                //"/home/elias/Documents/Arduino/arduino-1.8.7-linux64/arduino-1.8.7/hardware/arduino/avr/cores/arduino/Arduino.h"
+            ],
+            "forcedInclude": [
+                "/home/elias/Documents/Arduino/arduino-1.8.7-linux64/arduino-1.8.7/hardware/arduino/avr/cores/arduino/Arduino.h",
+                //"/home/elias/Documents/Arduino/arduino-1.8.7-linux64/arduino-1.8.7/libraries/**"
+            ],
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

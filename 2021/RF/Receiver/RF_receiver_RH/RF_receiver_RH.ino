@@ -20,6 +20,7 @@ void loop()
       // Message with a good checksum received, dump it.
       Serial.print("Message: ");
       Serial.println((char*)buf);         
+      //Serial.println((int*)buf);
     }
     
 }
